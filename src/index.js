@@ -8,17 +8,21 @@ import { logToConsole as lg, objectToString as ots } from './logger.js'; //short
 const makeNode = (data, left = null, right = null)=> ( { data, left, right } );
 
 //this fn takes a sorted array and makes a parent node from the middle element. as it is recursively calling itself with a sub array (start to mid, mid to end), eventually a base condition should be reached to return null instead of a node.
-const makeTree = (cleanArr)=> {
-  lg(cleanArr); //debugging
-  //base case below might be wrong, check....
-  if ( !Array.isArray(cleanArr) ) return null;
-  //make parent node from array's middle element. Math.floor is optional
-  const midIndex = Math.floor( cleanArr.length / 2 );
-  const root = makeNode( cleanArr[midIndex] );
-  //make parent node's left subtree root...might need to check for existence
-  root.left = makeTree(  );
+const makeTree = (arr)=> {
+  //base case uses slice() functionality:  Passing start / end indexes that do not
+  //select anything (like 0,0 or just a start index greater than array length) to the
+  //slice method of an empty array [] selects nothing and returns an empty array.
+  if (!arr.length) return null;
+  // lg(arr); //debugging
 
-  return root;
+  //make parent node from array's middle element. Math.floor used for clarity
+  const midIndex = Math.floor( arr.length / 2 );
+  const root = makeNode( arr[midIndex] );
+  //make left subtree of parent node
+  root.left = makeTree( arr.slice(0, midIndex) );
+  //make right subtree of parent node
+  root.right = makeTree( arr.slice(midIndex + 1) );
+  return root; //all done? return to last call, maybe it was recursive
 };
 
 //fn to clean array and return tree root node
@@ -36,19 +40,9 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   lg(`${prefix}${isLeft ? '└─ ' : '┌─ '}${node.data}`);
   node.left !== null && prettyPrint(node.left,`${prefix}${isLeft ? '   ' : '│  '}`,true);
 };
-//---prettyPrint fn example ... or use JSON.stringify with '\t'
-const testTree = {
-  data: 4,
-  left: {
-    data: 2,
-    left: { data: 1, left: null, right: null },
-    right: { data: 3, left: null, right: null },
-  },
-  right: null,
-};
-// prettyPrint(testTree);
 
 //testing
-// const testArr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
-const testArr = [3, 1, 2];
-lg( `level-0 tree root:\n${ ots( getTreeFromArr( testArr ) ) }` );
+const testArr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+// const testArr = [3, 1, 2];
+// lg( `level-0 tree root:\n${ ots( getTreeFromArr( testArr ) ) }` );
+prettyPrint( getTreeFromArr( testArr ) );
