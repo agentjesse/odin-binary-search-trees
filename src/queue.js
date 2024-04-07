@@ -7,7 +7,7 @@ const makeNode = (data, next = null)=> ( { data, next } );
 
 //queue object maker
 const makeQueue = ()=> {
-  let head = null; let tail = null; let length = 0;
+  let head = null; let tail = null; let size = 0;
   //management fns
 
   //fn to add new node to queue as tail
@@ -20,17 +20,17 @@ const makeQueue = ()=> {
       tail.next = makeNode(data);
       tail = tail.next;
     }
-    length++;
+    size++;
   };
 
-  //fn to remove head of queue and return data
+  //fn to remove head of queue and return the node's data
   const dequeue = ()=> {
     //handle empty queue
     if (!head) return null;
     //dequeue head
     const dequeuedNode = head;
     head = head.next;
-    length--;
+    size--;
     //clear tail if last node is removed
     if (!head) tail = null;
     return dequeuedNode.data;
@@ -39,21 +39,19 @@ const makeQueue = ()=> {
   return {
     enqueue,
     dequeue,
-    getLength: ()=> length,
+    getSize: ()=> size,
     getHead: ()=> head,
     getTail: ()=> tail
   };
 };
 export default makeQueue;
 
-//queue data structure testing. no need to comment out since not exported
-const q = makeQueue();
-q.dequeue(); //error test handlng
-q.enqueue(1);
-q.enqueue(2);
-q.enqueue(3);
-q.enqueue(4);
-q.enqueue(5);
-lg( `queue length: ${q.getLength()}` );
-lg( ots( q.getHead() ) ); //ots used since node truncates long strings
-lg( q.getTail() );
+//queue data structure testing. comment out since this file is exported
+// const q = makeQueue();
+// q.enqueue(1);
+// lg( q.dequeue() ); //error checking
+// q.enqueue(2);
+// q.enqueue(3);
+// lg( `queue size: ${q.getSize()}` );
+// lg( ots( q.getHead() ) ); //ots used since node truncates long strings
+// lg( q.getTail() );

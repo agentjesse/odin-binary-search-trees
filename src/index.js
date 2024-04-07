@@ -38,27 +38,34 @@ const processArr = (rawArr)=> (
 //fn to print a binary tree. Provide level-0 root node, optional prefix like \n
 const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node === null) return;
-  node.right !== null && prettyPrint(node.right,`${prefix}${isLeft ? '│  ' : '   '}`,false);
-  lg(`${prefix}${isLeft ? '└─ ' : '┌─ '}${node.data}`);
-  node.left !== null && prettyPrint(node.left,`${prefix}${isLeft ? '   ' : '│  '}`,true);
+  node.right !== null && prettyPrint(node.right,`${prefix}${isLeft ? '│   ' : '    '}`,false);
+  lg(`${prefix}${isLeft ? '└─- ' : '┌─- '}${node.data}`);
+  node.left !== null && prettyPrint(node.left,`${prefix}${isLeft ? '    ' : '│   '}`,true);
 };
 
 //fn to wrap a BST with management methods. Pass in a BST level-0 root node
 const makeManagedBST = (level0RootNode)=> {
   //management fns
   const levelOrder = (callback = null)=> {
-    //use queue data structure
-    const queue = makeQueue();
-    
-    //add root node to queue...
-
-
-
+    //initialize a queue data structure with level-0 root node
+    const q = makeQueue();
+    q.enqueue( level0RootNode );
+    //while q size > 0: dequeue node, read its data, enqueue its children
+    while ( q.getSize() ) {
+      //dequeue() returns queue node's data, which is a BST node in this case
+      const dequeuedNode = q.dequeue();
+      //use data, enqueue existing children
+      //if no callback, print data
+      lg( dequeuedNode.data );
+      if (dequeuedNode.left) q.enqueue( dequeuedNode.left );
+      if (dequeuedNode.right) q.enqueue( dequeuedNode.right );
+    }
   };
 
   return {
     level0RootNode,
     prettyPrintBSD: ()=> prettyPrint(level0RootNode),
+    levelOrder
   };
 };
 
@@ -69,3 +76,4 @@ const testArr = [3, 1, 2];
 const pureBST = makeTree( processArr( testArr ) );
 const managedBST = makeManagedBST( pureBST );
 managedBST.prettyPrintBSD();
+managedBST.levelOrder();
