@@ -5,6 +5,7 @@ Return an array of values if no callback provided.
 
 //For Node.js, when importing local modules, include the file extension in the import statement.
 import { logToConsole as lg, objectToString as ots } from './logger.js'; //shorthand loggers
+import makeQueue from './queue.js';
 
 const makeNode = (data, left = null, right = null)=> ( { data, left, right } );
 
@@ -45,8 +46,14 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 //fn to wrap a BST with management methods. Pass in a BST level-0 root node
 const makeManagedBST = (level0RootNode)=> {
   //management fns
-  const levelOrder = (cb)=> {
+  const levelOrder = (callback = null)=> {
+    //use queue data structure
+    const queue = makeQueue();
     
+    //add root node to queue...
+
+
+
   };
 
   return {
