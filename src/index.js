@@ -37,9 +37,11 @@ const processArr = (rawArr)=> (
 //fn to print a binary tree. Provide level-0 root node, optional prefix like \n
 const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node === null) return;
-  node.right !== null && prettyPrint(node.right,`${prefix}${isLeft ? '│   ' : '    '}`,false);
+  // eslint-disable-next-line no-unused-expressions
+  node.right !== null && prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
   lg(`${prefix}${isLeft ? '└─- ' : '┌─- '}${node.data}`);
-  node.left !== null && prettyPrint(node.left,`${prefix}${isLeft ? '    ' : '│   '}`,true);
+  // eslint-disable-next-line no-unused-expressions
+  node.left !== null && prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
 };
 
 //fn to wrap a BST with management methods. Pass in a BST level-0 root node
@@ -72,7 +74,7 @@ const makeManagedBST = (level0RootNode)=> {
   const preOrder = (callback = null)=> {
     const result = []; //empty array for results
     //recursive fn for traversal
-    const traverseFromNode = (node)=> {
+    const traverseFrom = (node)=> {
       if (!node) return; //base case, expected a node but got null
       //use data
       if (callback) { //callback exists? invoke it with data
@@ -81,12 +83,12 @@ const makeManagedBST = (level0RootNode)=> {
         result.push( node.data );
       }
       //traverse to left child recursively
-      traverseFromNode( node.left );
+      traverseFrom( node.left );
       //traverse to right child recursively
-      traverseFromNode( node.right );
+      traverseFrom( node.right );
     };
     //start the recursive traversal with level-0 root node
-    traverseFromNode( level0RootNode );
+    traverseFrom( level0RootNode );
     if (!callback) return result; //no callback? return result[]
   };
 
@@ -95,10 +97,10 @@ const makeManagedBST = (level0RootNode)=> {
   const inOrder = (callback = null)=> {
     const result = []; //empty array for results
     //recursive fn for traversal
-    const traverseFromNode = (node)=> {
+    const traverseFrom = (node)=> {
       if (!node) return; //base case, expected a node but got null
       //traverse to left child recursively
-      traverseFromNode( node.left );
+      traverseFrom( node.left );
       //use data
       if (callback) { //callback exists? invoke it with data
         callback( node.data );
@@ -106,10 +108,10 @@ const makeManagedBST = (level0RootNode)=> {
         result.push( node.data );
       }
       //traverse to right child recursively
-      traverseFromNode( node.right );
+      traverseFrom( node.right );
     };
     //start the recursive traversal with level-0 root node
-    traverseFromNode( level0RootNode );
+    traverseFrom( level0RootNode );
     if (!callback) return result; //no callback? return result[]
   };
 
@@ -118,12 +120,12 @@ const makeManagedBST = (level0RootNode)=> {
   const postOrder = (callback = null)=> {
     const result = []; //empty array for results
     //recursive fn for traversal
-    const traverseFromNode = (node)=> {
+    const traverseFrom = (node = level0RootNode)=> {
       if (!node) return; //base case, expected a node but got null
       //traverse to left child recursively
-      traverseFromNode( node.left );
+      traverseFrom( node.left );
       //traverse to right child recursively
-      traverseFromNode( node.right );
+      traverseFrom( node.right );
       //use data
       if (callback) { //callback exists? invoke it with data
         callback( node.data );
@@ -132,8 +134,47 @@ const makeManagedBST = (level0RootNode)=> {
       }
     };
     //start the recursive traversal with level-0 root node
-    traverseFromNode( level0RootNode );
+    traverseFrom();
     if (!callback) return result; //no callback? return result[]
+  };
+
+  //fn to check if BST has some data, and return the node if found.
+  const find = (data)=> {
+    //recursively check children if not in parent
+    const checkAndTraverse = (node = level0RootNode)=> {
+      //return node if it's null (data not in tree) or its data matches.
+      if (!node || node.data === data) return node;
+      //if data is less than this nodes data
+      if (data < node.data) return checkAndTraverse(node.left);
+      //if data greater
+      return checkAndTraverse(node.right);
+    };
+    return checkAndTraverse();
+  };
+  //fn to insert data node into BST
+  const insert = (data)=> {
+    //recursive fn to check node's data against new data and decide where/if to insert.
+    const traverseAndInsert = (node = level0RootNode)=> {
+      //edge case: if this fn was called with a null node, return a new node to
+      //use for assignment to previous calls nodes subtree
+      if (!node) return makeNode(data);
+      //if insertion data less than node data: set data in left subtree. do a
+      //recursive call with left node and wait for it to return:
+      if (data < node.data) node.left = traverseAndInsert(node.left);
+      //if insertion data greater than node data: set data in right subtree. do a
+      //recursive call with right node and wait for it to return:
+      if (data > node.data) node.right = traverseAndInsert(node.right);
+      //double edge case: return the current node to the caller as it is expecting
+      //a subtree. also, if this line is reached due to insertion data matching this
+      //nodes data, return the unchanged node.
+      return node;
+    };
+    traverseAndInsert();
+  };
+
+  //fn to delete data node from BST
+  const deleteData = (data)=> {
+    
   };
 
   return {
@@ -142,7 +183,10 @@ const makeManagedBST = (level0RootNode)=> {
     levelOrder,
     preOrder,
     inOrder,
-    postOrder
+    postOrder,
+    find,
+    insert,
+    deleteData
   };
 };
 
@@ -161,8 +205,8 @@ managedBST.prettyPrintBSD();
 // lg( managedBST.levelOrder(lg) );
 
 //preorder traversal with no callback returns data array
-lg( 'preorder traversal:\b');
-lg( managedBST.preOrder() );
+// lg( 'preorder traversal:\b');
+// lg( managedBST.preOrder() );
 //preorder traversal with callback to invoke for each node
 // lg( managedBST.preOrder(lg) );
 
@@ -177,3 +221,14 @@ lg( managedBST.preOrder() );
 // lg( managedBST.postOrder() );
 //postorder traversal with callback to invoke for each node
 // lg( managedBST.postOrder(lg) );
+
+//return node if found in a BST
+// lg( `node with search data found: ${ ots( managedBST.find(1) )}` );
+
+//insert data node into BST
+// managedBST.insert(3);
+// managedBST.prettyPrintBSD(); //see tree after insert
+
+//delete data node from BST
+managedBST.deleteData(3);
+managedBST.prettyPrintBSD(); //see tree after delete
