@@ -39,7 +39,7 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node === null) return;
   // eslint-disable-next-line no-unused-expressions
   node.right !== null && prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
-  lg(`${prefix}${isLeft ? '└─- ' : '┌─- '}${node.data}`);
+  lg(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
   // eslint-disable-next-line no-unused-expressions
   node.left !== null && prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
 };
@@ -74,7 +74,7 @@ const makeManagedBST = (level0RootNode)=> {
   const preOrder = (callback = null)=> {
     const result = []; //empty array for results
     //recursive fn for traversal
-    const traverseFrom = (node)=> {
+    const traverseFrom = (node = level0RootNode)=> {
       if (!node) return; //base case, expected a node but got null
       //use data
       if (callback) { //callback exists? invoke it with data
@@ -87,8 +87,7 @@ const makeManagedBST = (level0RootNode)=> {
       //traverse to right child recursively
       traverseFrom( node.right );
     };
-    //start the recursive traversal with level-0 root node
-    traverseFrom( level0RootNode );
+    traverseFrom();//start the recursive traversal
     if (!callback) return result; //no callback? return result[]
   };
 
@@ -97,7 +96,7 @@ const makeManagedBST = (level0RootNode)=> {
   const inOrder = (callback = null)=> {
     const result = []; //empty array for results
     //recursive fn for traversal
-    const traverseFrom = (node)=> {
+    const traverseFrom = (node = level0RootNode)=> {
       if (!node) return; //base case, expected a node but got null
       //traverse to left child recursively
       traverseFrom( node.left );
@@ -110,8 +109,7 @@ const makeManagedBST = (level0RootNode)=> {
       //traverse to right child recursively
       traverseFrom( node.right );
     };
-    //start the recursive traversal with level-0 root node
-    traverseFrom( level0RootNode );
+    traverseFrom(); //start the recursive traversal
     if (!callback) return result; //no callback? return result[]
   };
 
@@ -133,8 +131,7 @@ const makeManagedBST = (level0RootNode)=> {
         result.push( node.data );
       }
     };
-    //start the recursive traversal with level-0 root node
-    traverseFrom();
+    traverseFrom();//start the recursive traversal
     if (!callback) return result; //no callback? return result[]
   };
 
@@ -152,7 +149,7 @@ const makeManagedBST = (level0RootNode)=> {
     return checkAndTraverse();
   };
   //fn to insert data node into BST
-  const insert = (data)=> {
+  const insertData = (data)=> {
     //recursive fn to check node's data against new data and decide where/if to insert.
     const traverseAndInsert = (node = level0RootNode)=> {
       //edge case: if this fn was called with a null node, return a new node to
@@ -169,12 +166,45 @@ const makeManagedBST = (level0RootNode)=> {
       //nodes data, return the unchanged node.
       return node;
     };
-    traverseAndInsert();
+    traverseAndInsert(); //start the recursive traversal
   };
 
-  //fn to delete data node from BST
+  //fn to delete node with matching data from BST
   const deleteData = (data)=> {
-    
+    //traversal fn. returns modified tree, even if just null node.
+    const traverseAndDelete = (node = level0RootNode)=> {
+      //base: if this fn is called with a null node, return it for an assignment.
+      if (!node) return node;
+      //compare delete data to node data, then do a recursive call with the appropriate
+      //subtree to modify it.
+      if (data < node.data) {
+        node.left = traverseAndDelete( node.left );
+      } else if (data > node.data) {
+        node.right = traverseAndDelete( node.right );
+      } else {
+        //this conditional is reached when the nodes data matches delete data.
+        //delete nodes of one or no children by returning their subtree. a null
+        //subtree is returned for nodes with no children, effectively deleting the node.
+        if (!node.left) {
+          return node.right;
+        } else if (!node.right) {
+          return node.left;
+        } else {
+          //delete nodes with two children by replacing the node's data with the smallest data in the right subtree.
+          let tempNode = node.right;
+          while (tempNode.left) { //get to the smallest data node
+            tempNode = tempNode.left;
+          }
+          node.data = tempNode.data; //copy value
+          //delete the smallest data node from right subtree
+          data = tempNode.data; //set new delete data for recursive deletion of tempNode
+          node.right = traverseAndDelete(node.right);
+        }
+      }
+      //return modified subtree
+      return node;
+    };
+    traverseAndDelete(); //start the recursive traversal
   };
 
   return {
@@ -185,7 +215,7 @@ const makeManagedBST = (level0RootNode)=> {
     inOrder,
     postOrder,
     find,
-    insert,
+    insertData,
     deleteData
   };
 };
@@ -226,9 +256,9 @@ managedBST.prettyPrintBSD();
 // lg( `node with search data found: ${ ots( managedBST.find(1) )}` );
 
 //insert data node into BST
-// managedBST.insert(3);
+// managedBST.insertData(3);
 // managedBST.prettyPrintBSD(); //see tree after insert
 
-//delete data node from BST
-managedBST.deleteData(3);
-managedBST.prettyPrintBSD(); //see tree after delete
+//delete data from BST
+// managedBST.deleteData(67);
+// managedBST.prettyPrintBSD(); //see tree after delete

@@ -27,6 +27,8 @@
         "default-case":"off",
         "padded-blocks":"off",
         "consistent-return":"off",
-        "template-curly-spacing":"off"
+        "template-curly-spacing":"off",
+        "no-lonely-if":"warn",
+        "no-else-return":"warn"
     }
 }
