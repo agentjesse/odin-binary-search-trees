@@ -1,5 +1,4 @@
 /* Next task:
--
 */
 
 //For Node.js, when importing local modules, include the file extension in the import statement.
@@ -27,7 +26,8 @@ const makeTree = (processedArr)=> {
   return root; //all done? return to last call, maybe it was recursive
 };
 
-//fn to process a raw (unsorted/duplicates) array for BST creation
+//fn to take a raw (unsorted/duplicates) array, process it, and return processed array
+//for BST creation
 const processArr = (rawArr)=> (
   rawArr.sort( (a, b)=> a - b ) //sort array
   //remove dupes. Filter skips keeping current value if it's equal to next one
@@ -42,7 +42,7 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   node.left !== null && prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
 };
 
-//fn to wrap a BST with management methods. Pass in a BST level-0 root node
+//fn to wrap a BST with management methods. Pass in a BST's level-0 root node
 const makeManagedBST = (level0RootNode)=> {
   //management fns
   //fn to traverse BST in level order and return an array of each visited node's
@@ -274,7 +274,47 @@ const makeManagedBST = (level0RootNode)=> {
   };
 };
 
-//-----------Testing and Usage------------
+//-driver script-
+( ()=>{
+  //make raw array of random numbers from interval: [0, 100]
+  const randomArr = Array.from({ length: 15 }, ()=> Math.floor( Math.random() * 101 ));
+  // lg( processArr(randomArr) ); //debug
+  //make managed BST from processed array
+  const managedBST = makeManagedBST( makeTree( processArr(randomArr) ) );
+
+  //log tree, confirm it's balanced
+  managedBST.prettyPrintBSD();
+  lg( `tree balanced: ${ managedBST.isBalanced() }` );
+
+  //print out all elements in level, preorder, inorder, postorder
+  lg( 'level-order, preorder, inorder, postorder arrays(respectively):' );
+  lg( managedBST.levelOrder() );
+  lg( managedBST.preOrder() );
+  lg( managedBST.inOrder() );
+  lg( managedBST.postOrder() );
+
+  //insert some (exact amount may decrease after processing the array) random numbers from interval: [101, 200] into BST to unbalance it:
+  const randomArr2 = processArr( Array.from({ length: 5 }, ()=> Math.floor( 101 + Math.random() * 100 )) );
+  randomArr2.forEach( (data)=> managedBST.insertData( data ) );
+  //log tree, confirm it's unbalanced
+  managedBST.prettyPrintBSD();
+  lg( `tree balanced: ${ managedBST.isBalanced() }` );
+
+  //balance tree, log it, confirm it's balanced
+  managedBST.rebalance();
+  managedBST.prettyPrintBSD();
+  lg( `tree balanced: ${ managedBST.isBalanced() }` );
+
+  //print out all elements in level, preorder, inorder, postorder
+  lg( 'level-order, preorder, inorder, postorder arrays(respectively):' );
+  lg( managedBST.levelOrder() );
+  lg( managedBST.preOrder() );
+  lg( managedBST.inOrder() );
+  lg( managedBST.postOrder() );
+
+} )();
+
+//---------------------------Testing and Usage----------------------------------
 // const testArr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 // const testArr = [3, 1, 2];
 // const testArr = [2];
