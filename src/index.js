@@ -1,5 +1,5 @@
 /* Next task:
-- add a rebalance fn Tip: use a traversal method to provide a new array to the buildTree function.
+-
 */
 
 //For Node.js, when importing local modules, include the file extension in the import statement.
@@ -220,7 +220,7 @@ const makeManagedBST = (level0RootNode)=> {
   const deleteData = (data)=> {
     //traversal fn. returns modified tree, even if just null node.
     const traverseAndDelete = (node = level0RootNode)=> {
-      //base: if this fn is called with a null node, return it for an assignment.
+      //base: if this fn is called with a null node, return it for subtree assignment.
       if (!node) return node;
       //compare delete data to node data, then do a recursive call with the appropriate
       //subtree to modify it.
@@ -254,6 +254,9 @@ const makeManagedBST = (level0RootNode)=> {
     traverseAndDelete(); //start recursive traversal
   };
 
+  //fn to rebalance the BST: Make new tree from inorder traversal array
+  const rebalance = ()=> { level0RootNode = makeTree( inOrder() ); };
+
   return {
     level0RootNode,
     prettyPrintBSD: ()=> prettyPrint(level0RootNode),
@@ -266,67 +269,62 @@ const makeManagedBST = (level0RootNode)=> {
     deleteData,
     getNodeDepth,
     heightOfNode,
-    isBalanced
+    isBalanced,
+    rebalance
   };
 };
 
-//testing
-const testArr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+//-----------Testing and Usage------------
+// const testArr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 // const testArr = [3, 1, 2];
 // const testArr = [2];
-//managed Binary Search Tree via wrapper
-const pureBST = makeTree( processArr( testArr ) );
-const managedBST = makeManagedBST( pureBST );
-managedBST.prettyPrintBSD();
 
-//level order traversal with no callback returns data array
-// lg( 'level order traversal:\b');
+//interact with the BST via a management fn wrapper
+// const baseBST = makeTree( processArr( testArr ) );
+// const managedBST = makeManagedBST( baseBST );
+//** to print/view the bst, run this method from the wrapper:
+// managedBST.prettyPrintBSD();
+
+//level order traversal returns node array, or invokes optional callback
 // lg( managedBST.levelOrder() );
-//level order traversal with callback to invoke for each node
 // lg( managedBST.levelOrder(lg) );
 
-//preorder traversal with no callback returns data array
-// lg( 'preorder traversal:\b');
+//preorder traversal returns node array, or invokes optional callback
 // lg( managedBST.preOrder() );
-//preorder traversal with callback to invoke for each node
 // lg( managedBST.preOrder(lg) );
 
-//inorder traversal with no callback returns data array
-// lg( 'inorder traversal:\b');
+//inorder traversal returns node array, or invokes optional callback
 // lg( managedBST.inOrder() );
-//inorder traversal with callback to invoke for each node
 // lg( managedBST.inOrder(lg) );
 
-//postorder traversal with no callback returns data array
-// lg( 'postorder traversal:\b');
+//postorder traversal returns node array, or invokes optional callback
 // lg( managedBST.postOrder() );
-//postorder traversal with callback to invoke for each node
 // lg( managedBST.postOrder(lg) );
 
 //return node if found in a BST
-// lg( `node with search data found: ${ ots( managedBST.findNode( 1 ) )}` );
+// lg( ots( managedBST.findNode( 1 ) ) );
 
 //insert data node into BST
 // managedBST.insertData( 3 );
-// managedBST.prettyPrintBSD(); //see tree after insert
 
 //delete data from BST
 // managedBST.deleteData( 67 );
-// managedBST.prettyPrintBSD(); //see tree after delete
 
 //return depth of a node given it's data
-// lg( `depth of node: ${managedBST.getNodeDepth( 3 )}` );
+// lg( `depth of node: ${ managedBST.getNodeDepth( 3 ) }` );
 
 //return height of a node
-// lg( `height of node: ${managedBST.heightOfNode( managedBST.findNode( 2 ) )}` );
+// lg( `height of node: ${ managedBST.heightOfNode( managedBST.findNode( 2 ) ) }` );
 
-//check if tree is balanced
-//make unbalanced binary tree
-managedBST.deleteData( 1 );
-managedBST.deleteData( 3 );
-managedBST.deleteData( 5 );
-managedBST.deleteData( 7 );
-managedBST.prettyPrintBSD();
-lg( `tree balanced: ${ managedBST.isBalanced() }` );
+//delete some notes to unbalance the tree...
+// managedBST.deleteData( 1 );
+// managedBST.deleteData( 3 );
+// managedBST.deleteData( 5 );
+// managedBST.deleteData( 7 );
+// ...then check if tree is unbalanced
+// lg( `tree balanced: ${ managedBST.isBalanced() }` );
 
-
+//balance unbalanced tree...
+// managedBST.rebalance();
+// lg( `tree balanced: ${ managedBST.isBalanced() }` );
+// managedBST.prettyPrintBSD();
