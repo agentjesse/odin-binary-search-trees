@@ -1,5 +1,5 @@
 /* Next task:
-- work on getNodeHeight fn
+- make isBalanced fn
 */
 
 //For Node.js, when importing local modules, include the file extension in the import statement.
@@ -134,7 +134,7 @@ const makeManagedBST = (level0RootNode)=> {
   };
 
   //fn to find node in BST from data. Returns node if found or null if not.
-  const find = (data)=> {
+  const findNode = (data)=> {
     //recursively check children if not in parent
     const checkAndTraverse = (node = level0RootNode)=> {
       //return node if it's null (data not in tree) or its data matches.
@@ -170,20 +170,30 @@ const makeManagedBST = (level0RootNode)=> {
     return depth;
   };
 
-  //fn to return height of a node or -1 if not found. pass in the node's data
-  const getNodeHeight = (data)=> {
-    //(recursive) node depth finding algorithm: Base case is to return -1 when called
-    //with an empty tree. Calculate heights of the left and right subtrees recursively
-    //(divide & conquer). Finally return height of current node as 1 + the max of it's
-    //two subtree heights.
-    const heightOfNode = (node)=> {
-      if (!node) return -1; //base case. eventually handles single node trees
-      const leftTreeHeight = heightOfNode(node.left);
-      const rightTreeHeight = heightOfNode(node.right);
-      return 1 + Math.max( leftTreeHeight, rightTreeHeight );
-    };
-    //get node using find, which returns null if node is not found in BST.
-    return heightOfNode( find(data) );
+  //fn to return true/false if tree is balanced or not
+  const isBalanced = (node = level0RootNode)=> {
+    //base case: fn called with null from leaf node, need to return true
+    if (!node) return true;
+    //get left and right subtree heights
+    // const leftTreeHeight
+
+
+
+
+
+
+  };
+
+  //fn to return height of a node, or -1 if not found. pass in node itself
+  //(recursive) node depth finding algorithm: Base case is to return -1 when called
+  //with an empty tree. Calculate heights of the left and right subtrees recursively
+  //(divide & conquer). Finally return height of current node as 1 + the max of it's
+  //two subtree heights.
+  const heightOfNode = (node)=> {
+    if (!node) return -1; //base case. eventually handles single node trees
+    const leftTreeHeight = heightOfNode(node.left);
+    const rightTreeHeight = heightOfNode(node.right);
+    return 1 + Math.max( leftTreeHeight, rightTreeHeight );
   };
 
   //fn to insert data node into BST
@@ -252,11 +262,12 @@ const makeManagedBST = (level0RootNode)=> {
     preOrder,
     inOrder,
     postOrder,
-    find,
+    findNode,
     insertData,
     deleteData,
     getNodeDepth,
-    getNodeHeight
+    heightOfNode,
+    isBalanced
   };
 };
 
@@ -294,7 +305,7 @@ managedBST.prettyPrintBSD();
 // lg( managedBST.postOrder(lg) );
 
 //return node if found in a BST
-// lg( `node with search data found: ${ ots( managedBST.find( 1 ) )}` );
+// lg( `node with search data found: ${ ots( managedBST.findNode( 1 ) )}` );
 
 //insert data node into BST
 // managedBST.insertData( 3 );
@@ -307,7 +318,8 @@ managedBST.prettyPrintBSD();
 //return depth of a node given it's data
 // lg( `depth of node: ${managedBST.getNodeDepth( 3 )}` );
 
-//return depth of a node given it's data
-// lg( `height of node: ${managedBST.getNodeHeight( 2 )}` );
+//return height of a node
+lg( `height of node: ${managedBST.heightOfNode( managedBST.findNode( 2 ) )}` );
 
-//
+//check if tree is balanced
+// lg( `tree balanced: ${ managedBST.isBalanced() }` );
