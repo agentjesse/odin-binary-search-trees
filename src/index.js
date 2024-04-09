@@ -1,5 +1,5 @@
 /* Next task:
--
+- work on getNodeHeight fn
 */
 
 //For Node.js, when importing local modules, include the file extension in the import statement.
@@ -30,17 +30,15 @@ const makeTree = (processedArr)=> {
 //fn to process a raw (unsorted/duplicates) array for BST creation
 const processArr = (rawArr)=> (
   rawArr.sort( (a, b)=> a - b ) //sort array
-  //remove dupes. Filter skips keeping current value it's equal to next one
+  //remove dupes. Filter skips keeping current value if it's equal to next one
     .filter( (currentVal, currentIndex)=> !(currentVal === rawArr[currentIndex + 1]) )
 );
 
 //fn to print a binary tree. Provide level-0 root node, optional prefix like \n
 const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node === null) return;
-  // eslint-disable-next-line no-unused-expressions
   node.right !== null && prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
   lg(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
-  // eslint-disable-next-line no-unused-expressions
   node.left !== null && prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
 };
 
@@ -87,7 +85,7 @@ const makeManagedBST = (level0RootNode)=> {
       //traverse to right child recursively
       traverseFrom( node.right );
     };
-    traverseFrom();//start the recursive traversal
+    traverseFrom();//start recursive traversal
     if (!callback) return result; //no callback? return result[]
   };
 
@@ -109,7 +107,7 @@ const makeManagedBST = (level0RootNode)=> {
       //traverse to right child recursively
       traverseFrom( node.right );
     };
-    traverseFrom(); //start the recursive traversal
+    traverseFrom(); //start recursive traversal
     if (!callback) return result; //no callback? return result[]
   };
 
@@ -131,29 +129,66 @@ const makeManagedBST = (level0RootNode)=> {
         result.push( node.data );
       }
     };
-    traverseFrom();//start the recursive traversal
+    traverseFrom();//start recursive traversal
     if (!callback) return result; //no callback? return result[]
   };
 
-  //fn to check if BST has some data, and return the node if found.
+  //fn to find node in BST from data. Returns node if found or null if not.
   const find = (data)=> {
     //recursively check children if not in parent
     const checkAndTraverse = (node = level0RootNode)=> {
       //return node if it's null (data not in tree) or its data matches.
       if (!node || node.data === data) return node;
-      //if data is less than this nodes data
+      //if data is less than this node's data
       if (data < node.data) return checkAndTraverse(node.left);
       //if data greater
       return checkAndTraverse(node.right);
     };
-    return checkAndTraverse();
+    return checkAndTraverse();//start recursive traversal
   };
+
+  //fn to return depth of a node or -1 if not found. pass in the node's data
+  const getNodeDepth = (data)=> {
+    //initialize depth return value. return depth > 0 if node is in tree
+    let depth = -1;
+    //traverse tree until node found and increment depth
+    const traverseForDepth = (node = level0RootNode)=> {
+      //edge case: fn called with null, meaning data is not in tree
+      if (!node) {
+        depth = -1;
+        return;
+      }
+      depth++; //increment depth when visiting
+      //traverse into tree for depth increments
+      if (data < node.data) {
+        traverseForDepth(node.left);
+      } else if (data > node.data) {
+        traverseForDepth(node.right);
+      } //if the data matches, this fn now returns control to it's caller
+    };
+    traverseForDepth(); //start recursive traversal
+    return depth;
+  };
+
+  //fn to return height of a node or -1 if not found. pass in the node's data
+  const getNodeHeight = (data)=> {
+    //recursive node depth algorithm: return -1 when called with an empty tree. Calculate heights of the left and right subtrees recursively (divide & conquer). height of current node is 1 + the maximum of it's two subtree heights.
+    
+    //recursive fn to return height of a node from heights of it's subtrees
+    const heightOfNode = (node)=> {
+
+    };
+    
+    //get node using find, which returns null if node is not found in BST.
+    return heightOfNode( find(data) );
+  };
+
   //fn to insert data node into BST
   const insertData = (data)=> {
     //recursive fn to check node's data against new data and decide where/if to insert.
     const traverseAndInsert = (node = level0RootNode)=> {
       //edge case: if this fn was called with a null node, return a new node to
-      //use for assignment to previous calls nodes subtree
+      //use for assignment to previous calls node's subtree
       if (!node) return makeNode(data);
       //if insertion data less than node data: set data in left subtree. do a
       //recursive call with left node and wait for it to return:
@@ -163,10 +198,10 @@ const makeManagedBST = (level0RootNode)=> {
       if (data > node.data) node.right = traverseAndInsert(node.right);
       //double edge case: return the current node to the caller as it is expecting
       //a subtree. also, if this line is reached due to insertion data matching this
-      //nodes data, return the unchanged node.
+      //node's data, return the unchanged node.
       return node;
     };
-    traverseAndInsert(); //start the recursive traversal
+    traverseAndInsert(); //start recursive traversal
   };
 
   //fn to delete node with matching data from BST
@@ -182,7 +217,7 @@ const makeManagedBST = (level0RootNode)=> {
       } else if (data > node.data) {
         node.right = traverseAndDelete( node.right );
       } else {
-        //this conditional is reached when the nodes data matches delete data.
+        //this conditional is reached when the node's data matches delete data.
         //delete nodes of one or no children by returning their subtree. a null
         //subtree is returned for nodes with no children, effectively deleting the node.
         if (!node.left) {
@@ -204,7 +239,7 @@ const makeManagedBST = (level0RootNode)=> {
       //return modified subtree
       return node;
     };
-    traverseAndDelete(); //start the recursive traversal
+    traverseAndDelete(); //start recursive traversal
   };
 
   return {
@@ -216,7 +251,9 @@ const makeManagedBST = (level0RootNode)=> {
     postOrder,
     find,
     insertData,
-    deleteData
+    deleteData,
+    getNodeDepth,
+    getNodeHeight
   };
 };
 
@@ -262,3 +299,9 @@ managedBST.prettyPrintBSD();
 //delete data from BST
 // managedBST.deleteData(67);
 // managedBST.prettyPrintBSD(); //see tree after delete
+
+//return depth of a node given it's data
+// lg( `depth of node: ${managedBST.getNodeDepth(3)}` );
+
+//return depth of a node given it's data
+lg( `height of node: ${managedBST.getNodeHeight(2)}` );
