@@ -172,13 +172,16 @@ const makeManagedBST = (level0RootNode)=> {
 
   //fn to return height of a node or -1 if not found. pass in the node's data
   const getNodeHeight = (data)=> {
-    //recursive node depth algorithm: return -1 when called with an empty tree. Calculate heights of the left and right subtrees recursively (divide & conquer). height of current node is 1 + the maximum of it's two subtree heights.
-    
-    //recursive fn to return height of a node from heights of it's subtrees
+    //(recursive) node depth finding algorithm: Base case is to return -1 when called
+    //with an empty tree. Calculate heights of the left and right subtrees recursively
+    //(divide & conquer). Finally return height of current node as 1 + the max of it's
+    //two subtree heights.
     const heightOfNode = (node)=> {
-
+      if (!node) return -1; //base case. eventually handles single node trees
+      const leftTreeHeight = heightOfNode(node.left);
+      const rightTreeHeight = heightOfNode(node.right);
+      return 1 + Math.max( leftTreeHeight, rightTreeHeight );
     };
-    
     //get node using find, which returns null if node is not found in BST.
     return heightOfNode( find(data) );
   };
@@ -260,6 +263,7 @@ const makeManagedBST = (level0RootNode)=> {
 //testing
 // const testArr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const testArr = [3, 1, 2];
+// const testArr = [2];
 //managed Binary Search Tree via wrapper
 const pureBST = makeTree( processArr( testArr ) );
 const managedBST = makeManagedBST( pureBST );
@@ -290,18 +294,20 @@ managedBST.prettyPrintBSD();
 // lg( managedBST.postOrder(lg) );
 
 //return node if found in a BST
-// lg( `node with search data found: ${ ots( managedBST.find(1) )}` );
+// lg( `node with search data found: ${ ots( managedBST.find( 1 ) )}` );
 
 //insert data node into BST
-// managedBST.insertData(3);
+// managedBST.insertData( 3 );
 // managedBST.prettyPrintBSD(); //see tree after insert
 
 //delete data from BST
-// managedBST.deleteData(67);
+// managedBST.deleteData( 67 );
 // managedBST.prettyPrintBSD(); //see tree after delete
 
 //return depth of a node given it's data
-// lg( `depth of node: ${managedBST.getNodeDepth(3)}` );
+// lg( `depth of node: ${managedBST.getNodeDepth( 3 )}` );
 
 //return depth of a node given it's data
-lg( `height of node: ${managedBST.getNodeHeight(2)}` );
+// lg( `height of node: ${managedBST.getNodeHeight( 2 )}` );
+
+//
